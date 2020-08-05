@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.*;
@@ -38,6 +39,9 @@ class AuthControllerTest {
     private MyUserDetailsService userDetailsService;
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    Authentication authentication;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -72,6 +76,8 @@ class AuthControllerTest {
         // login
         Mockito.when(userDetailsService.getUserByName("myUser")).thenReturn(new User(1, "myUser", passwordEncoder.encode("myPassword")));
         Mockito.when(userDetailsService.loadUserByUsername("myUser")).thenReturn(new org.springframework.security.core.userdetails.User("myUser", passwordEncoder.encode("myPassword"), Collections.emptyList()));
+        Mockito.when(authenticationManager.authenticate(Mockito.any())).thenReturn(authentication);
+        Mockito.when(authentication.getName()).thenReturn("myUser");
         MvcResult responseResult = mvc.perform(post("/auth/login").contentType(MediaType.APPLICATION_JSON).content(JSON.toJSONString(usernamePassword)))
                 .andExpect(status().isOk())
                 .andExpect(mvcResult -> {
