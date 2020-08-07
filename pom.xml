@@ -18,6 +18,23 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>aliyun maven</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+			<layout>default</layout>
+			<!-- 是否开启发布版构件下载 -->
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<!-- 是否开启快照版构件下载 -->
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -103,19 +120,40 @@
 
 	<build>
 		<plugins>
-			<!--<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-
 			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>6.4.4</version>
+				<configuration>
+					<url>jdbc:mysql://localhost:3306/blog?useSSL=false</url>
+					<user>root</user>
+					<password>123456</password>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- for unit test-->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.22.2</version>
 				<configuration>
 					<argLine>-Dfile.encoding=UTF-8</argLine>
+					<excludes>
+						<exclude>**/integrations/**</exclude>
+					</excludes>
 				</configuration>
-			</plugin>-->
+			</plugin>
+			<plugin>
+				<!-- for integrations test -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.22.2</version>
+				<configuration>
+					<includes>
+						<include>**/integrations/**</include>
+					</includes>
+				</configuration>
+			</plugin>
+
 		</plugins>
 
 	</build>
